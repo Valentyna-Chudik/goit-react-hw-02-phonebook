@@ -1,6 +1,5 @@
 import { Component } from 'react';
 // import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 
 export default class Form extends Component {
   state = {
@@ -14,8 +13,9 @@ export default class Form extends Component {
   };
 
   handleSubmit = e => {
+    const { name, number } = this.state;
     e.preventDefault();
-    this.props.onSubmit(this.state);
+    this.props.onSubmit(name, number);
     this.reset();
   };
 
@@ -24,25 +24,25 @@ export default class Form extends Component {
   };
 
   render() {
+    const { name, number } = this.state;
+
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor={uuidv4()}>
+        <label>
           Name
           <input
-            id={uuidv4()}
             type="text"
             name="name"
-            value={this.state.name}
+            value={name}
             onChange={this.handleInputChange}
           ></input>
         </label>
-        <label htmlFor={uuidv4()}>
+        <label>
           Number
           <input
-            id={uuidv4()}
-            type="text"
+            type="tel"
             name="number"
-            value={this.state.number}
+            value={number}
             onChange={this.handleInputChange}
           ></input>
         </label>
