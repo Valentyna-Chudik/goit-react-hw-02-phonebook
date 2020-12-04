@@ -4,12 +4,12 @@ import Container from './components/Container/Container';
 import Section from './components/Section/Section';
 import Form from './components/Form/Form';
 import ContactsList from './components/ContactsList/ContactsList';
-
-const initialState = [{ id: '', name: '', number: '' }];
+import Filter from './components/Filter/Filter';
 
 export default class App extends Component {
   state = {
-    contacts: initialState,
+    contacts: [],
+    filter: '',
   };
 
   addContact = (name, number) => {
@@ -32,7 +32,22 @@ export default class App extends Component {
     }));
   };
 
+  changeFilter = e => {
+    this.setState({ filter: e.currentTarget.value });
+  };
+
+  getVisibleContacts = () => {
+    const { filter, contacts } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter),
+    );
+  };
+
   render() {
+    const { filter } = this.state;
+    const visibleContacts = this.getVisibleContacts();
     return (
       <div>
         <Container>
@@ -41,9 +56,10 @@ export default class App extends Component {
           </Section>
           <Section title="Contacts">
             <ContactsList
-              contacts={this.state.contacts}
+              contacts={visibleContacts}
               onDeleteContact={this.deleteContact}
             />
+            <Filter value={filter} onChange={this.changeFilter} />
           </Section>
         </Container>
       </div>
