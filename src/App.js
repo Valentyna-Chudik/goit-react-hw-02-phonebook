@@ -1,19 +1,37 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
+
 import Container from './components/Container/Container';
 import Section from './components/Section/Section';
 import Form from './components/Form/Form';
-import ContactsList from './components/ContactsList/ContactsList';
 import Filter from './components/Filter/Filter';
+import ContactsList from './components/ContactsList/ContactsList';
 
 export default class App extends Component {
   state = {
-    contacts: [],
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
     filter: '',
   };
 
+  static propTypes = {
+    contacts: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        number: PropTypes.string,
+      }),
+    ),
+    filter: PropTypes.string,
+  };
+
   addContact = (name, number) => {
-    console.log(name, number);
+    const { contacts } = this.state;
 
     const contact = {
       id: uuidv4(),
@@ -21,9 +39,17 @@ export default class App extends Component {
       number,
     };
 
-    this.setState(({ contacts }) => ({
-      contacts: [contact, ...contacts],
-    }));
+    if (name.trim() === '' || number.trim() === '') {
+      alert(`All fields must be completed.`);
+    } else if (contacts.find(contact => contact.name === name)) {
+      alert(`${name} is already in contacts.`);
+    } else if (contacts.find(contact => contact.number === number)) {
+      alert(`${number} is already in contacts.`);
+    } else {
+      this.setState(({ contacts }) => ({
+        contacts: [contact, ...contacts],
+      }));
+    }
   };
 
   deleteContact = contactId => {
@@ -48,6 +74,7 @@ export default class App extends Component {
   render() {
     const { filter } = this.state;
     const visibleContacts = this.getVisibleContacts();
+
     return (
       <div>
         <Container>
@@ -55,11 +82,11 @@ export default class App extends Component {
             <Form onSubmit={this.addContact} />
           </Section>
           <Section title="Contacts">
+            <Filter value={filter} onChange={this.changeFilter} />
             <ContactsList
               contacts={visibleContacts}
               onDeleteContact={this.deleteContact}
             />
-            <Filter value={filter} onChange={this.changeFilter} />
           </Section>
         </Container>
       </div>
